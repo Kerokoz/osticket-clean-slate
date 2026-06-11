@@ -8,6 +8,11 @@ A clean, installer-fresh, **multi-architecture** Docker image of [osTicket](http
 ![Platforms](https://img.shields.io/badge/platforms-amd64%20%7C%20arm64-green)
 ![IMAP](https://img.shields.io/badge/email-IMAP%20enabled-brightgreen)
 
+> 🐳 **Available on Docker Hub:** [kerokoz/osticket-clean-slate](https://hub.docker.com/r/kerokoz/osticket-clean-slate) — the Docker Hub page has the detailed, step-by-step setup particulars (quick start, installer settings, and post-install hardening). Pull it with:
+> ```bash
+> docker pull kerokoz/osticket-clean-slate:1.18.3
+> ```
+
 ---
 
 ## 📌 What is osTicket?
