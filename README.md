@@ -1,35 +1,53 @@
 # 🎫 osTicket Clean Slate — Dockerized, Multi-Architecture Help Desk
 
-A clean, installer-fresh, **multi-architecture** Docker image of [osTicket](https://osticket.com) 1.18.3 — built from scratch, wired to MySQL via Docker Compose, published to Docker Hub, and running a live help desk with authenticated email delivery.
+A clean, installer-fresh, **multi-architecture** Docker image of [osTicket](https://osticket.com) 1.18.3 — wired to MySQL via Docker Compose and ready to run in minutes.
 
 ![osTicket](https://img.shields.io/badge/osTicket-1.18.3-orange)
 ![PHP](https://img.shields.io/badge/PHP-8.2-blue)
 ![Apache](https://img.shields.io/badge/Apache-2.4-red)
 ![Platforms](https://img.shields.io/badge/platforms-amd64%20%7C%20arm64-green)
 ![IMAP](https://img.shields.io/badge/email-IMAP%20enabled-brightgreen)
-![Docker Hub](https://img.shields.io/badge/Docker%20Hub-kerokoz%2Fosticket--clean--slate-blue)
-
-> **Pull it:** `docker pull kerokoz/osticket-clean-slate:1.18.3`
-> **Docker Hub:** https://hub.docker.com/r/kerokoz/osticket-clean-slate
 
 ---
 
-## 📌 What this is
+## 📌 What is osTicket?
 
-A ready-to-run osTicket image that anyone — on Windows, Intel Mac, Apple Silicon, or Linux — can pull and stand up in minutes. It ships with the web installer intact so each user completes a fresh setup against their own database. Built deliberately and documented end to end, including the real failures and how they were solved.
+[osTicket](https://osticket.com) is a widely-used, open-source **support ticket system**. It turns incoming requests (via web forms or email) into organized tickets that support staff can track, assign, and respond to — a lightweight, self-hosted help desk used by businesses, schools, and organizations of all sizes.
 
-**Highlights:**
-- 🧱 Built from a `php:8.2-apache` base with the PHP extensions osTicket needs (`gd`, `intl`, `mysqli`, `zip`, `imap`).
-- 🌍 **Multi-architecture** (`linux/amd64` + `linux/arm64`) — runs natively on any common chip.
-- 🐳 Orchestrated with **Docker Compose** (app + MySQL 8.0 + persistent volume), credentials passed as environment variables.
-- 📧 **IMAP-enabled** for inbound email-to-ticket, with a documented, authenticated **SMTP** outbound setup.
-- 📚 Fully documented build journey — five playbooks covering build, publish, multi-arch, and operations.
+This repository provides a **Dockerized, ready-to-run** version of osTicket: pull the image, start it with Docker Compose, and complete the web installer in your browser. It ships with the installer intact so each deployment sets up its own fresh database.
+
+---
+
+## ✨ Features
+
+- 🧱 Built on the official `php:8.2-apache` base image.
+- 🌍 **Multi-architecture** — runs natively on `linux/amd64` (Intel/AMD) and `linux/arm64` (Apple Silicon / ARM). Docker pulls the right version automatically.
+- 🐳 **Docker Compose orchestration** — the app and a MySQL 8.0 database start together, with a persistent volume so data survives restarts.
+- 🔐 **Credentials via environment variables** — no secrets baked into the image.
+- 📧 **IMAP-enabled** — the PHP `imap` extension is included, so osTicket can fetch incoming email and convert it into tickets.
+- 🆕 **Installer-fresh** — the web installer is included for a clean first-run setup.
+
+---
+
+## 🧩 Dependencies
+
+| Component | Version / Detail |
+|-----------|------------------|
+| Base image | `php:8.2-apache` |
+| Web server | Apache 2.4 |
+| PHP | 8.2 |
+| PHP extensions | `gd`, `intl`, `mysqli`, `zip`, `imap` |
+| Database | MySQL 8.0 (run as a companion container) |
+| Orchestration | Docker Compose |
+| Architectures | `linux/amd64`, `linux/arm64` |
+
+**Requirements to run:** Docker and Docker Compose installed (e.g. Docker Desktop). An internet connection for the first image pull.
 
 ---
 
 ## 🚀 Quick start
 
-Save as `docker-compose.yml` (change the passwords):
+Save the following as `docker-compose.yml` (change the passwords first):
 
 ```yaml
 services:
@@ -50,51 +68,48 @@ volumes:
   osticket_db_data:
 ```
 
+Start it:
+
 ```bash
 docker compose up -d
 ```
 
-Open **http://localhost:8080** and complete the installer. On the database screen use hostname **`db`** (not `localhost`), database `osticket`, user `osticket_user`, and your chosen password.
+Open **http://localhost:8080** and complete the installer.
 
-### 🔒 After installing — hardening (do both)
+### Installer database settings
+| Field | Value |
+|-------|-------|
+| MySQL Database | `osticket` |
+| MySQL Username | `osticket_user` |
+| MySQL Password | _your `MYSQL_PASSWORD`_ |
+| MySQL Hostname | `db` |
+
+> Use hostname **`db`** (the Compose service name), not `localhost`.
+
+---
+
+## 🔒 After installing — recommended hardening
+
+osTicket shows two reminder banners after setup. Apply both on your running instance:
+
 ```bash
+# Remove the installer
 docker compose exec app rm -rf /var/www/html/setup
+
+# Lock the config file to read-only
 docker compose exec app chmod 644 /var/www/html/include/ost-config.php
 ```
 
----
-
-## 🧩 Technical decisions worth noting
-
-- **Clean image keeps `setup/`.** A shareable installer image must retain the web installer; hardening (removing `setup/`, locking the config) is done per-deployment, not baked in. Clean-image vs production-hardened are deliberately different states.
-- **Secrets via environment variables**, never hard-coded into the image — so the published image stays password-free and shareable.
-- **`imap` added via a maintained extension installer**, after the deprecated Debian package broke the initial build — then rebuilt multi-arch so every user benefits.
-- **Authenticated SMTP for deliverability.** Outbound email runs through a properly domain-authenticated relay (SPF/DKIM), after an unauthenticated server got mail flagged as spam. Deliverability is treated as a first-class requirement, not an afterthought.
+These apply to the running container and reset if it's recreated — by design, so the image stays installer-ready for the next deployment.
 
 ---
 
-## 📦 Image details
+## 🏷️ Image tags
 
-- **Base:** `php:8.2-apache`
-- **PHP extensions:** `gd`, `intl`, `mysqli`, `zip`, `imap`
-- **Architectures:** `linux/amd64`, `linux/arm64`
-- **Tags:** `1.18.3` (pinned), `latest`
-- **Companion service:** MySQL 8.0
-
----
-
-## 🛠️ Everyday commands
-
-```bash
-docker compose up -d        # start (app + db)
-docker compose ps           # status
-docker compose stop         # pause
-docker compose start        # resume
-docker compose down         # stop + remove containers (keeps data)
-docker compose down -v      # also wipe data (full reset)
-docker compose pull         # fetch the latest image
-```
-> Run `docker compose` commands from the folder containing `docker-compose.yml`.
+| Tag | Meaning |
+|-----|---------|
+| `1.18.3` | Pinned version |
+| `latest` | Most recent build |
 
 ---
 
@@ -105,4 +120,4 @@ osTicket is open-source software released under the GPL. This repository package
 - **Official osTicket project:** [osTicket/osTicket](https://github.com/osTicket/osTicket)
 - **osTicket website:** [osticket.com](https://osticket.com)
 
-Dockerized, packaged, and maintained by **[@Kerokoz](https://github.com/Kerokoz)** · Docker Hub: **[kerokoz/osticket-clean-slate](https://hub.docker.com/r/kerokoz/osticket-clean-slate)**
+Maintained by **kerokoz**.
