@@ -15,6 +15,14 @@ A clean, installer-fresh, **multi-architecture** Docker image of [osTicket](http
 
 ---
 
+## ✅ Requirements
+
+- **Docker** and **Docker Compose** installed — the easiest way is [Docker Desktop](https://www.docker.com/products/docker-desktop/), which includes both.
+- An internet connection for the first image pull.
+- Any operating system that runs Docker — Windows, macOS (Intel or Apple Silicon), or Linux.
+
+---
+
 ## 📌 What is osTicket?
 
 [osTicket](https://osticket.com) is a widely-used, open-source **support ticket system**. It turns incoming requests (via web forms or email) into organized tickets that support staff can track, assign, and respond to — a lightweight, self-hosted help desk used by businesses, schools, and organizations of all sizes.
@@ -45,8 +53,6 @@ This repository provides a **Dockerized, ready-to-run** version of osTicket: pul
 | Database | MySQL 8.0 (run as a companion container) |
 | Orchestration | Docker Compose |
 | Architectures | `linux/amd64`, `linux/arm64` |
-
-**Requirements to run:** Docker and Docker Compose installed (e.g. Docker Desktop). An internet connection for the first image pull.
 
 ---
 
