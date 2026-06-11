@@ -10,7 +10,7 @@ A clean, installer-fresh, **multi-architecture** Docker image of [osTicket](http
 ![Docker Hub](https://img.shields.io/badge/Docker%20Hub-kerokoz%2Fosticket--clean--slate-blue)
 
 > **Pull it:** `docker pull kerokoz/osticket-clean-slate:1.18.3`
-> **Docker Hub:** https://hub.docker.com/repository/docker/kerokoz/osticket-clean-slate
+> **Docker Hub:** https://hub.docker.com/r/kerokoz/osticket-clean-slate
 
 ---
 
